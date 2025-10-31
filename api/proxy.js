@@ -2,7 +2,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const ALLOW_LIST = [
     /^https?:\/\/iclass\.buaa\.edu\.cn/,
-    /^https?:\/\/httpbin\.org\/post/,
+    /^https?:\/\/httpbin\.org\/,
 ];
 
 const ALLOWED_DOMAINS = [
@@ -11,17 +11,23 @@ const ALLOWED_DOMAINS = [
 ];
 
 export default async function handler(req, res) {
+    console.log('start');
+    console.log(req.headers);
+    console.log(req.headers.origin);
+    
     const origin = req.headers.origin || '';
     const isOriginAllowed = ALLOWED_DOMAINS.some(domain => 
         origin.startsWith(domain)
     );
+    console.log(isOriginAllowed)
     
     const corsHeaders = {
         'Access-Control-Allow-Origin': isOriginAllowed ? origin : 'none',
         'Access-Control-Allow-Methods': 'GET,POST',
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     };
-    
+    console.log(corsHeaders);
+    console.log(req.method);
     if (req.method === 'OPTIONS') {
         return res.status(200).set(corsHeaders).end();
     }
@@ -30,6 +36,7 @@ export default async function handler(req, res) {
         return res.status(403).json({ error: 'Origin not allowed' });
     }
 
+    console.log(req.query.url);
     const targetUrl = req.query.url;
     const targetMethod = req.query.method || 'GET';
     let requestParams = {};
@@ -40,6 +47,7 @@ export default async function handler(req, res) {
     }
     
     const allowed = ALLOW_LIST.some(reg => reg.test(targetUrl));
+    console.log(allowed);
     if (!allowed) {
         return res.status(403).json({ error: 'Target not allowed' });
     }
@@ -95,6 +103,7 @@ export default async function handler(req, res) {
     });
     
     proxyMiddleware(req, res);
+    console.log(res);
 }
 
 export const config = {
