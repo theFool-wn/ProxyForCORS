@@ -2,6 +2,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const ALLOW_LIST = [
     /^https?:\/\/iclass\.buaa\.edu\.cn/,
+    /^https?:\/\/httpbin\.org\/post/,
 ];
 
 const ALLOWED_DOMAINS = [
