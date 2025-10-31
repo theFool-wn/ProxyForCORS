@@ -2,7 +2,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 const ALLOW_LIST = [
     /^https?:\/\/iclass\.buaa\.edu\.cn/,
-    /^https?:\/\/httpbin\.org\/,
+    /^https?:\/\/httpbin\.org/,
 ];
 
 const ALLOWED_DOMAINS = [
@@ -30,11 +30,19 @@ export default async function handler(req, res) {
     console.log(corsHeaders);
     console.log(req.method);
     if (req.method === 'OPTIONS') {
-        return res.status(200).set(corsHeaders).end();
+        res.status(200);
+        Object.keys(corsHeaders).forEach(key => {
+            res.setHeader(key, corsHeaders[key]);
+        });
+        return res.end();
     }
     
     if (!isOriginAllowed) {
-        return res.status(403).json({ error: 'Origin not allowed' });
+        res.status(403);
+        Object.keys(corsHeaders).forEach(key => {
+            res.setHeader(key, corsHeaders[key]);
+        });
+        return res.json({ error: 'Origin not allowed' });
     }
 
     console.log(req.query.url);
@@ -44,13 +52,21 @@ export default async function handler(req, res) {
     let targetHeaders = {};
     
     if (!targetUrl || !/^https?:\/\//.test(targetUrl)) {
-        return res.status(400).json({ error: 'Missing or invalid url parameter' });
+        res.status(400);
+        Object.keys(corsHeaders).forEach(key => {
+            res.setHeader(key, corsHeaders[key]);
+        });
+        return res.json({ error: 'Missing or invalid url parameter' });
     }
     
     const allowed = ALLOW_LIST.some(reg => reg.test(targetUrl));
     console.log(allowed);
     if (!allowed) {
-        return res.status(403).json({ error: 'Target not allowed' });
+        res.status(403);
+        Object.keys(corsHeaders).forEach(key => {
+            res.setHeader(key, corsHeaders[key]);
+        });
+        return res.json({ error: 'Target not allowed' });
     }
 
     try {
@@ -61,7 +77,11 @@ export default async function handler(req, res) {
             targetHeaders = JSON.parse(req.query.headers);
         }
     } catch (error) {
-        return res.status(400).json({ error: 'Invalid params or headers format' });
+        res.status(400);
+        Object.keys(corsHeaders).forEach(key => {
+            res.setHeader(key, corsHeaders[key]);
+        });
+        return res.json({ error: 'Invalid params or headers format' });
     }
     
     let finalTargetUrl = targetUrl;
@@ -98,7 +118,11 @@ export default async function handler(req, res) {
             },
             error: (err, req, res) => {
                 console.error('Proxy error:', err.message);
-                res.status(500).json({ error: 'Proxy server error' });
+                res.status(500);
+                Object.keys(corsHeaders).forEach(key => {
+                    res.setHeader(key, corsHeaders[key]);
+                });
+                res.json({ error: 'Proxy server error' });
             }
         }
     });
