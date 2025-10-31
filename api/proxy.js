@@ -22,8 +22,7 @@ export default async function handler(req, res) {
     console.log(isOriginAllowed)
     
     const corsHeaders = {
-        'Access-Control-Allow-Origin': *,
-        // 'Access-Control-Allow-Origin': isOriginAllowed ? origin : 'none',
+        'Access-Control-Allow-Origin': isOriginAllowed ? origin : 'none',
         'Access-Control-Allow-Methods': 'GET,POST',
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     };
