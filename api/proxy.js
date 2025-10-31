@@ -11,23 +11,17 @@ const ALLOWED_DOMAINS = [
 ];
 
 export default async function handler(req, res) {
-    console.log('start');
-    console.log(req.headers);
-    console.log(req.headers.origin);
-    
     const origin = req.headers.origin || '';
     const isOriginAllowed = ALLOWED_DOMAINS.some(domain => 
         origin.startsWith(domain)
     );
-    console.log(isOriginAllowed)
     
     const corsHeaders = {
         'Access-Control-Allow-Origin': isOriginAllowed ? origin : 'none',
         'Access-Control-Allow-Methods': 'GET,POST',
         'Access-Control-Allow-Headers': 'Content-Type,Authorization',
     };
-    console.log(corsHeaders);
-    console.log(req.method);
+
     if (req.method === 'OPTIONS') {
         res.status(200);
         Object.keys(corsHeaders).forEach(key => {
@@ -44,7 +38,6 @@ export default async function handler(req, res) {
         return res.json({ error: 'Origin not allowed' });
     }
 
-    console.log(req.query.url);
     const targetUrl = req.query.url;
     const targetMethod = req.query.method || 'GET';
     let requestParams = {};
@@ -59,7 +52,6 @@ export default async function handler(req, res) {
     }
     
     const allowed = ALLOW_LIST.some(reg => reg.test(targetUrl));
-    console.log(allowed);
     if (!allowed) {
         res.status(403);
         Object.keys(corsHeaders).forEach(key => {
@@ -111,6 +103,8 @@ export default async function handler(req, res) {
                 }
             },
             proxyRes: (proxyRes, req, res) => {
+                proxyRes.headers['X-Proxy-By'] = 'Vercel-Proxy';
+                proxyRes.headers['X-Proxy-Server'] = 'proxy.wangnan.net';
                 Object.keys(corsHeaders).forEach(key => {
                     proxyRes.headers[key] = corsHeaders[key];
                 });
@@ -127,7 +121,6 @@ export default async function handler(req, res) {
     });
     
     proxyMiddleware(req, res);
-    console.log(res);
 }
 
 export const config = {
