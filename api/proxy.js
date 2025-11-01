@@ -106,15 +106,15 @@ export default async function handler(req, res) {
                 }
             },
             proxyRes: (proxyRes, req, res) => {
-                console.log('start')
-                console.log(proxyRes.headers)
+                console.log('start');
+                console.log(proxyRes.headers);
                 proxyRes.headers['X-Proxy-By'] = 'Vercel-Proxy';
                 proxyRes.headers['X-Proxy-Server'] = 'proxy.wangnan.net';
-                console.log(proxyRes.headers)
+                console.log(proxyRes.headers);
                 Object.keys(corsHeaders).forEach(key => {
                     proxyRes.headers[key] = corsHeaders[key];
                 });
-                console.log(proxyRes.headers)
+                console.log(proxyRes.headers);
             },
             error: (err, req, res) => {
                 console.error('Proxy error:', err.message);
@@ -125,8 +125,8 @@ export default async function handler(req, res) {
                 res.json({ error: 'Proxy server error' });
             }
         }
-        console.log('end')
-        console.log(proxyRes.headers)
+        console.log('end');
+        console.log(proxyRes.headers);
     });
     
     proxyMiddleware(req, res);
