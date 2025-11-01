@@ -1,9 +1,9 @@
 export default function handler(req, res) {
-  const { path } = req.query;
+  const fullPath = req.url || 'unknown';
   
   res.status(404).json({
     error: 'API Endpoint Not Found',
-    message: `The API endpoint /api/${Array.isArray(path) ? path.join('/') : path} does not exist.`,
+    message: `The API endpoint ${fullPath} does not exist.`,
     availableEndpoints: [
       '/api/proxy',
     ],
