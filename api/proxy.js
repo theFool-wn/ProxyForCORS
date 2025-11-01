@@ -105,20 +105,17 @@ export default async function handler(req, res) {
             }
         },
         onProxyRes: (proxyRes, req, res) => {
-            console.log('start');
-            console.log(proxyRes.headers);
             proxyRes.headers['X-Proxy-By'] = 'Vercel-Proxy';
             proxyRes.headers['X-Proxy-Server'] = 'proxy.wangnan.net';
-            console.log(proxyRes.headers);
             Object.keys(corsHeaders).forEach(key => {
                 proxyRes.headers[key] = corsHeaders[key];
             });
-            console.log(proxyRes.headers);
-            console.log('end');
         },
         onError: (err, req, res) => {
             console.error('Proxy error:', err.message);
             res.status(500);
+            res.headers['X-Proxy-By'] = 'Vercel-Proxy';
+            res.headers['X-Proxy-Server'] = 'proxy.wangnan.net';
             Object.keys(corsHeaders).forEach(key => {
                 res.setHeader(key, corsHeaders[key]);
             });
