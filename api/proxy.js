@@ -88,6 +88,9 @@ export default async function handler(req, res) {
         target: finalTargetUrl,
         changeOrigin: true,
         method: targetMethod,
+        pathRewrite: {
+            '^/api/proxy': '',
+        },
         on: {
             proxyReq: (proxyReq, req) => {
                 Object.keys(targetHeaders).forEach(key => {
