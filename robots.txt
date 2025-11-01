@@ -1,0 +1,40 @@
+# robots.txt
+
+User-agent: *
+Disallow: /
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: Googlebot
+Allow: /$
+Disallow: /api/
+Crawl-delay: 5
+
+User-agent: Bingbot
+Allow: /$
+Disallow: /api/
+Crawl-delay: 5
+
+User-agent: Baiduspider
+Allow: /$
+Disallow: /api/
+Crawl-delay: 5
+
+User-agent: YandexBot
+Allow: /$
+Disallow: /api/
+Crawl-delay: 5
