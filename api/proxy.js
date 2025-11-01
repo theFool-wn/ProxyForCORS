@@ -91,40 +91,38 @@ export default async function handler(req, res) {
         pathRewrite: {
             '^/api/proxy': '',
         },
-        on: {
-            proxyReq: (proxyReq, req) => {
-                Object.keys(targetHeaders).forEach(key => {
-                    if (key.toLowerCase() !== 'host') {
-                        proxyReq.setHeader(key, targetHeaders[key]);
-                    }
-                });
-                if (targetMethod === 'POST' && Object.keys(requestParams).length > 0) {
-                    const bodyData = JSON.stringify(requestParams);
-                    proxyReq.setHeader('Content-Type', 'application/json');
-                    proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-                    proxyReq.write(bodyData);
+        onProxyReq: (proxyReq, req) => {
+            Object.keys(targetHeaders).forEach(key => {
+                if (key.toLowerCase() !== 'host') {
+                    proxyReq.setHeader(key, targetHeaders[key]);
                 }
-            },
-            proxyRes: (proxyRes, req, res) => {
-                console.log('start');
-                console.log(proxyRes.headers);
-                proxyRes.headers['X-Proxy-By'] = 'Vercel-Proxy';
-                proxyRes.headers['X-Proxy-Server'] = 'proxy.wangnan.net';
-                console.log(proxyRes.headers);
-                Object.keys(corsHeaders).forEach(key => {
-                    proxyRes.headers[key] = corsHeaders[key];
-                });
-                console.log(proxyRes.headers);
-                console.log('end');
-            },
-            error: (err, req, res) => {
-                console.error('Proxy error:', err.message);
-                res.status(500);
-                Object.keys(corsHeaders).forEach(key => {
-                    res.setHeader(key, corsHeaders[key]);
-                });
-                res.json({ error: 'Proxy server error' });
+            });
+            if (targetMethod === 'POST' && Object.keys(requestParams).length > 0) {
+                const bodyData = JSON.stringify(requestParams);
+                proxyReq.setHeader('Content-Type', 'application/json');
+                proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+                proxyReq.write(bodyData);
             }
+        },
+        onProxyRes: (proxyRes, req, res) => {
+            console.log('start');
+            console.log(proxyRes.headers);
+            proxyRes.headers['X-Proxy-By'] = 'Vercel-Proxy';
+            proxyRes.headers['X-Proxy-Server'] = 'proxy.wangnan.net';
+            console.log(proxyRes.headers);
+            Object.keys(corsHeaders).forEach(key => {
+                proxyRes.headers[key] = corsHeaders[key];
+            });
+            console.log(proxyRes.headers);
+            console.log('end');
+        },
+        onError: (err, req, res) => {
+            console.error('Proxy error:', err.message);
+            res.status(500);
+            Object.keys(corsHeaders).forEach(key => {
+                res.setHeader(key, corsHeaders[key]);
+            });
+            res.json({ error: 'Proxy server error' });
         }
     });
     
