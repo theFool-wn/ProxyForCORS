@@ -115,6 +115,7 @@ export default async function handler(req, res) {
                     proxyRes.headers[key] = corsHeaders[key];
                 });
                 console.log(proxyRes.headers);
+                console.log('end');
             },
             error: (err, req, res) => {
                 console.error('Proxy error:', err.message);
@@ -125,8 +126,6 @@ export default async function handler(req, res) {
                 res.json({ error: 'Proxy server error' });
             }
         }
-        console.log('end');
-        console.log(proxyRes.headers);
     });
     
     proxyMiddleware(req, res);
